@@ -1,0 +1,10 @@
+<nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      Currency Exchange
+    </a>
+    <% if @helpers.user : %>
+      <% include 'shared/_headermenu' %>
+    <% end %>
+  </div>
+</nav>

@@ -1,0 +1,10 @@
+<nav class="navbar navbar-default navbar-fixed-bottom">
+  <div class="container">
+    <a class="nav navbar-nav navbar-text navbar-left" href="#">
+      Find us on Github
+    </a>
+    <% if @helpers.user : %>
+      <% include 'shared/_footermenu' %>
+    <% end %>
+  </div>
+</nav>
