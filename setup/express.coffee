@@ -25,6 +25,8 @@ app.use bodyParser.json()
 app.use bodyParser.urlencoded()
 app.use db.sessions
 app.use passport.initialize()
+#TODO add session secrete and move it to config
+#TODO add logger
 app.use passport.session()
 app.get '/confirm/:hash', cts.hash(passport), cts.confirm, cts.enter
 app.post '/login', cts.local(passport)

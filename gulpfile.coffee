@@ -10,7 +10,7 @@ sourcemaps = require 'gulp-sourcemaps'
 uglify = require 'gulp-uglify'
 watch = require 'gulp-watch'
 
-cfg = require './config'
+cfg = require './config/gulp'
 
 gulp.task 'default', ['build', 'livereload', 'nodemon', 'watch']
 
@@ -25,7 +25,7 @@ gulp.task 'nodemon', ->
 
 gulp.task 'livereload', ->
   livereload.listen()
-    
+
 gulp.task 'build', ['scripts', 'lint']
 
 gulp.task 'scripts', ->
@@ -38,22 +38,21 @@ gulp.task 'scripts', ->
   .pipe gulp.dest('public/js')
   .pipe livereload()
   .pipe notify(message: 'coffee build completed')
-  
+
 gulp.task 'views', ->
   gulp.src cfg.views
   .pipe livereload()
   .pipe notify(message: 'views refreshed')
-    
+
 gulp.task 'lint', ->
   gulp.src cfg.lint
   .pipe plumber()
   .pipe coffeelint()
   .pipe coffeelint.reporter()
   .pipe notify(message: 'coffeelint done')
-    
+
 gulp.task 'watch', ->
   watch cfg.client, ->
     gulp.start 'build'
   watch cfg.views, ->
     gulp.start 'views'
-    

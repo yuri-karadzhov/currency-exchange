@@ -1,5 +1,6 @@
 crypto = require 'crypto'
 
+#TODO move to config
 sole = "sjkTU^U23"
 
 exports.hash = (val) ->
@@ -14,7 +15,7 @@ exports.sole = (val) ->
 
 exports.expressToSocket = (middle) ->
   return (socket, next) ->
-    middle socket.request, socket.request.res, next
+    return middle socket.request, socket.request.res, next
 
 #TODO Check and complete this function
 exports.socketToExpress = (middle) ->
@@ -22,6 +23,4 @@ exports.socketToExpress = (middle) ->
     request = req
     request.res = res
     socket = request: request
-    middle socket, next
-  
-  
+    return middle socket, next

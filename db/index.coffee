@@ -11,6 +11,7 @@ exports.sub = redis.createClient()
 exports.sessions = session
   store: new RedisStore
     client: @client
+  #TODO move to config
   secret: 'shdfI*^&IU34'
 
 
@@ -18,7 +19,7 @@ exports.sessions = session
   console.error err.stack
 
 exports.users = require './users'
-  
+
 ###
 users:<id>
 users:<id>:bids - set

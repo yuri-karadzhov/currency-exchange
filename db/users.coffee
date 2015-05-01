@@ -4,7 +4,7 @@ tools = require '../tools'
 client = db.client
 
 class User
-  
+
   constructor: ({
     @id
     @email
@@ -15,27 +15,28 @@ class User
     @status
     @hash
   }) ->
-    
+
   persist: (cb) ->
+    #TODO use async and logger in this class
     client.hdel "users:#{@id}", 'hash'
     client.del "hashes:#{@hash}:uid"
     return client.hmset "users:#{@id}",
       status: 'registred'
     , cb
-    
+
   getBids: (cb) ->
-    
+
   getAsks: (cb) ->
-    
+
   isRegistred: ->
     return @status is 'registred'
-  
+
   isUnconfirmed: ->
-    @status is 'unconfirmed'
-  
+    return @status is 'unconfirmed'
+
   hasPassword: (password) ->
     return @password is tools.sole password
-  
+
   @create: ({
     email
     firstname
@@ -43,7 +44,7 @@ class User
     room
     password
   }, cb) ->
-    client.incr 'users:next', (err, uid) ->
+    return client.incr 'users:next', (err, uid) ->
       return cb err, null if err
       hash = tools.hash email
       solePassword = tools.sole password
@@ -61,19 +62,19 @@ class User
       client.hmset "users:#{uid}", userConfig
       user = new User userConfig
       return cb null, user
-  
+
   @findByEmail: (email, cb) ->
-    client.get "emails:#{email}:uid", (err, uid) ->
+    return client.get "emails:#{email}:uid", (err, uid) ->
       return cb err, null if err or not uid
       return db.users.findById uid, cb
-    
+
   @findByHash: (hash, cb) ->
-    client.get "hashes:#{hash}:uid", (err, uid) ->
+    return client.get "hashes:#{hash}:uid", (err, uid) ->
       return cb err, null if err or not uid
       return db.users.findById uid, cb
-  
+
   @findById: (uid, cb) ->
-    client.hgetall "users:#{uid}", (err, userConfig) ->
+    return client.hgetall "users:#{uid}", (err, userConfig) ->
       return cb err, null if err or not userConfig
       user = new User userConfig
       return cb null, user

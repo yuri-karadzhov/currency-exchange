@@ -5,16 +5,16 @@ HashStrategy = require('passport-hash').Strategy
 db = require '../db'
 
 passport.serializeUser (user, done) ->
-  done null, user
+  return done null, user
 
 passport.deserializeUser (user, done) ->
-  done null, user
+  return done null, user
 
 passport.use new LocalStrategy
   usernameField: 'email'
   passwordField: 'password'
 , (email, password, done) ->
-  db.users.findByEmail email, (err, user) ->
+  return db.users.findByEmail email, (err, user) ->
     return done err if err
     unless user
       return done null, no, message: "Unknown user #{email}"
@@ -25,7 +25,7 @@ passport.use new LocalStrategy
     return done null, user
 
 passport.use new HashStrategy (hash, done) ->
-  db.users.findByHash hash, (err, user) ->
+  return db.users.findByHash hash, (err, user) ->
     return done err if err
     unless user
       return done null, no, message: "Can not get user by hash #{hash}"
