@@ -20,9 +20,18 @@ class User
     #TODO use async and logger in this class
     client.hdel "users:#{@id}", 'hash'
     client.del "hashes:#{@hash}:uid"
-    return client.hmset "users:#{@id}",
-      status: 'registred'
-    , cb
+    return client.hset "users:#{@id}", 'status', 'registred', cb
+
+  forgotPassword: (cb) ->
+    hash = tools.hash @email, Date.now()
+    #TODO make hashes temporary and clean on expire
+    client.set "restores:#{hash}:uid", @id, (err) ->
+      return cb err, hash
+
+  restorePassword: ({hash, password}, cb) ->
+    @password = tools.hash password
+    client.del "restores:#{hash}:uid"
+    return client.hset "users:#{@id}", 'password', @password, cb
 
   getBids: (cb) ->
 
@@ -35,7 +44,7 @@ class User
     return @status is 'unconfirmed'
 
   hasPassword: (password) ->
-    return @password is tools.sole password
+    return @password is tools.hash password
 
   @create: ({
     email
@@ -46,8 +55,8 @@ class User
   }, cb) ->
     return client.incr 'users:next', (err, uid) ->
       return cb err, null if err
-      hash = tools.hash email
-      solePassword = tools.sole password
+      hash = tools.hash email, Date.now()
+      solePassword = tools.hash password
       userConfig =
         id: uid + ''
         email: email
@@ -78,5 +87,10 @@ class User
       return cb err, null if err or not userConfig
       user = new User userConfig
       return cb null, user
+
+  @findByRestore: (hash, cb) ->
+    return client.get "restores:#{hash}:uid", (err, uid) ->
+      return cb err, null if err
+      return db.users.findById uid, cb
 
 module.exports = User

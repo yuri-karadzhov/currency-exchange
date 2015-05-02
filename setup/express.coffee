@@ -11,13 +11,13 @@ passport = require './passport'
 
 app = express()
 
-ectRenderer = ect
+ectEngine = ect
   watch: yes
   root: __dirname + '/../views'
   ext: '.ect'
 
 app.set 'view engine', 'ect'
-app.engine 'ect', ectRenderer.render
+app.engine 'ect', ectEngine.render
 
 app.use livereload()
 
@@ -25,7 +25,6 @@ app.use bodyParser.json()
 app.use bodyParser.urlencoded()
 app.use db.sessions
 app.use passport.initialize()
-#TODO add session secrete and move it to config
 #TODO add logger
 app.use passport.session()
 app.get '/confirm/:hash', cts.hash(passport), cts.confirm, cts.enter

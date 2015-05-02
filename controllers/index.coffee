@@ -22,6 +22,52 @@ exports.isAuth = (req, res, next) ->
     success: no
     message: 'Not authenticated'
 
+exports.forgotPassword = (req, res, next) ->
+  email = req.body.email
+  #TODO write flash message
+  #TODO check email pattern
+  unless email.length
+    return res.send 'Enter email'
+  return db.users.findByEmail email, (err, user) ->
+    return next err if err
+    #TODO use flash instead
+    return res.send 'User is not registered' unless user
+    return user.forgotPassword (err, hash) ->
+      return next err if err
+      #TODO send email with the link
+      return res.send "Restore password:
+        <a href='http://localhost:9000/restore/#{hash}'>restore</a>"
+
+exports.restorePage = (req, res, next) ->
+  hash = req.params.hash
+  return db.users.findByRestore hash, (err, user) ->
+    return next err if err
+    #TODO use flash instead
+    return res.send 'Invalid restore link' unless user
+    return res.render 'restore', user: user, hash: hash
+
+exports.restorePassword = (req, res, next) ->
+  data = req.body
+  hash = data.hash
+  password = data.password
+  confirmpassword = data.confirmpassword
+
+  #TODO use flash
+  #TODO check password strenth
+  unless password.length
+    return res.send 'Enter password'
+  unless password is confirmpassword
+    return res.send 'Password did not match confirmation'
+
+  return db.users.findByRestore hash, (err, user) ->
+    return next err if err
+    #TODO use flash
+    return res.send 'Invalid restore link' unless user
+    return user.restorePassword {hash, password}, (err) ->
+      #TODO use flash
+      return next err if err
+      return res.redirect '/login'
+
 exports.register = (req, res, next) ->
   data = req.body
   email = data.email
@@ -46,7 +92,7 @@ exports.register = (req, res, next) ->
   unless password is confirmpassword
     return res.send 'Password did not match confirmation'
 
-  db.users.findByEmail email, (err, user) ->
+  return db.users.findByEmail email, (err, user) ->
     return next err if err
     #TODO use flash instead
     return res.send 'User already registered' if user

@@ -1,14 +1,13 @@
 crypto = require 'crypto'
+cluster = require 'cluster'
+os = require 'os'
 
-#TODO move to config
-sole = "sjkTU^U23"
+cfg = require '../config'
 
-exports.hash = (val) ->
-  hash = crypto.createHash 'md5'
-  hash.update Date() + val, 'ascii'
-  return hash.digest 'hex'
+exports.isDevelopment = ->
+  return cfg.ENVIRONMENT is 'development'
 
-exports.sole = (val) ->
+exports.hash = (val, sole = cfg.SOLE) ->
   hash = crypto.createHash 'md5'
   hash.update sole + val, 'ascii'
   return hash.digest 'hex'
@@ -24,3 +23,17 @@ exports.socketToExpress = (middle) ->
     request.res = res
     socket = request: request
     return middle socket, next
+
+exports.startCluster = (start) ->
+  cpus = if @isDevelopment() then 1 else os.cpus().length
+  gc = global.gc
+  if cluster.isMaster
+    cluster.fork() while cpus--
+    cluster.on 'exit', (worker, code, signal) ->
+      clearInterval gcInterval if gc
+      console.log "Worker #{worker.id} died: #{worker.process.pid}"
+  else
+    gcInterval = setInterval gc, cfg.GC_INTERVAL if gc
+    worker = cluster.worker
+    console.log "Worker #{worker.id} started: #{worker.process.pid}"
+    start()

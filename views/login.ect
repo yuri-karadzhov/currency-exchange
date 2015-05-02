@@ -1,7 +1,7 @@
 <% extend 'layouts/main' %>
 
 <div id="loginAccordion" class="panel-group">
-  
+
   <div class="panel panel-default">
     <div class="panel-heading">
       <a data-toggle="collapse" data-parent="#loginAccordion" href="#collapseLogin">
@@ -12,11 +12,26 @@
       <div class="panel-body">
 
         <% include 'users/_login' %>
-        
+
       </div>
     </div>
   </div>
-  
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <a data-toggle="collapse" data-parent="#loginAccordion" href="#collapseForgot">
+        Forgot password?
+      </a>
+    </div>
+    <div id="collapseForgot" class="panel-collapse collapse">
+      <div class="panel-body">
+
+        <% include 'users/_forgot' %>
+
+      </div>
+    </div>
+  </div>
+
   <div class="panel panel-default">
     <div class="panel-heading">
       <a data-toggle="collapse" data-parent="#loginAccordion" href="#collapseRegister">
@@ -25,11 +40,11 @@
     </div>
     <div id="collapseRegister" class="panel-collapse collapse">
       <div class="panel-body">
-      
+
         <% include 'users/_register' %>
-        
+
       </div>
     </div>
   </div>
-  
+
 </div>

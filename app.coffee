@@ -1,12 +1,16 @@
 http = require 'http'
 
-app = require './setup/express'
+cfg = require './config'
+tools = require './tools'
 
-server = http.Server app
+#TODO add domain
+tools.startCluster ->
+  app = require './setup/express'
 
-io = require('./setup/socketio').create server
+  server = http.Server app
 
-#TODO add cluster
-#TODO move port to config
-server.listen 9000, -> console.log "Currency exchange server
-  is runing on http://#{server.address().address}:#{server.address().port}"
+  io = require('./setup/socketio').create server
+
+  server.listen cfg.PORT, cfg.HOST, ->
+    console.log "Currency exchange server is runing on
+      http://#{cfg.HOST}:#{cfg.PORT}"

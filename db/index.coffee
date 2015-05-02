@@ -2,6 +2,8 @@ redis = require 'redis'
 connectRedis = require 'connect-redis'
 session = require 'express-session'
 
+cfg = require '../config'
+
 RedisStore = connectRedis session
 
 exports.client = redis.createClient()
@@ -11,8 +13,7 @@ exports.sub = redis.createClient()
 exports.sessions = session
   store: new RedisStore
     client: @client
-  #TODO move to config
-  secret: 'shdfI*^&IU34'
+  secret: cfg.SECRET
 
 
 @client.on 'error', (err) ->
