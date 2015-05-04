@@ -1,3 +1,21 @@
 body {
   padding-top: 70px;
 }
+
+.panel-dark {
+  border-color: transparent;
+}
+
+.panel-dark>.panel-body {
+  background-color: #38495a;
+}
+
+.panel-dark>.panel-heading {
+  background-color: #485563;
+  color: #ebebeb;
+  border-color: transparent;
+}
+
+.dropdown-dark>.dropdown-menu {
+  background-color: #384656;
+}

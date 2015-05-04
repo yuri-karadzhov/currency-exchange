@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "dependencies": {
     "jQuery": "~2.1.4",
-    "bootstrap": "~3.3.4",
-    "bootstrap-theme-supervillain": "~0.0.3"
+    "bootswatch-dist": "superhero"
   }
 }
