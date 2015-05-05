@@ -3,6 +3,8 @@
   "version": "0.0.1",
   "dependencies": {
     "jQuery": "~2.1.4",
-    "bootswatch-dist": "superhero"
+    "bootswatch-dist": "superhero",
+    "eonasdan-bootstrap-datetimepicker": "~4.7.14",
+    "moment": "~2.10.2"
   }
 }

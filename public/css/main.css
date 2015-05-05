@@ -20,3 +20,11 @@ body {
 .dropdown-dark>.dropdown-menu {
   background-color: #384656;
 }
+
+.date-dark>.dropdown-menu {
+  background-color: #384656;
+}
+
+.date-dark .dropdown-menu:before, .date-dark .dropdown-menu:after {
+  border-color: transparent !important;
+}

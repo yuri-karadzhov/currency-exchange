@@ -1,0 +1,71 @@
+<div id="placeBid" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">Place Bid</h4>
+      </div>
+      <div class="modal-body">
+      
+        <form class="form-horizontal">
+          
+          <div class="form-group">
+            <label for="bidCurrencySelector" class="col-sm-2 control-label">
+              Currency
+            </label>
+            <div class="col-sm-10">
+              <select id="bidCurrencySelector" class="form-control" name="currency">
+                <option>&#x24; USD</option>
+                <option>&#x20ac; EUR</option>
+                <option>&#x20bd; RUR</option>
+                <option>&#xa3; GBP</option>
+                <option>&#x20a3; CHF</option>
+                <option>&#x20b3; AUD</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="bidAmountInput" class="col-sm-2 control-label">
+              Amount
+            </label>
+            <div class="col-sm-10">
+              <input type="number" min=0 step=100 class="form-control" id="bidAmountInput" placeholder="Enter amount" name="amount">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="bidPartInput" class="col-sm-2 control-label">
+              Part size
+            </label>
+            <div class="col-sm-10">
+              <input type="number" min=0 step=50 class="form-control" id="bidPartInput" placeholder="Enter part size" name="part">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="bidTimePicker" class="col-sm-2 control-label">
+              End time
+            </label>
+            <div class="col-sm-10">
+              <div class='input-group date date-dark' id='bidTimePicker'>
+                <input type='text' class="form-control" />
+                <span class="input-group-addon">
+                  <span class="glyphicon glyphicon-time"></span>
+                </span>
+              </div>
+            </div>
+          </div>
+          
+        </form>
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary">Place Bid</button>
+      </div>
+    </div>
+  </div>
+</div>
