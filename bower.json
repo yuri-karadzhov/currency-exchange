@@ -5,6 +5,7 @@
     "jQuery": "~2.1.4",
     "bootswatch-dist": "superhero",
     "eonasdan-bootstrap-datetimepicker": "~4.7.14",
-    "moment": "~2.10.2"
+    "moment": "~2.10.2",
+    "soma-template": "~0.3.2"
   }
 }
