@@ -1,52 +1,52 @@
 <% extend 'layouts/main' %>
 
 <div class="col-md-6 col-md-offset-3">
-<div id="loginAccordion" class="panel-group">
+  <div id="loginAccordion" class="panel-group">
 
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <a data-toggle="collapse" data-parent="#loginAccordion" href="#collapseLogin">
-        Login
-      </a>
-    </div>
-    <div id="collapseLogin" class="panel-collapse collapse in">
-      <div class="panel-body">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <a data-toggle="collapse" data-parent="#loginAccordion" href="#collapseLogin">
+          Login
+        </a>
+      </div>
+      <div id="collapseLogin" class="panel-collapse collapse in">
+        <div class="panel-body">
 
-        <% include 'users/_login' %>
+          <% include 'users/_login' %>
 
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <a data-toggle="collapse" data-parent="#loginAccordion" href="#collapseForgot">
-        Forgot password?
-      </a>
-    </div>
-    <div id="collapseForgot" class="panel-collapse collapse">
-      <div class="panel-body">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <a data-toggle="collapse" data-parent="#loginAccordion" href="#collapseForgot">
+          Forgot password?
+        </a>
+      </div>
+      <div id="collapseForgot" class="panel-collapse collapse">
+        <div class="panel-body">
 
-        <% include 'users/_forgot' %>
+          <% include 'users/_forgot' %>
 
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <a data-toggle="collapse" data-parent="#loginAccordion" href="#collapseRegister">
-        Register
-      </a>
-    </div>
-    <div id="collapseRegister" class="panel-collapse collapse">
-      <div class="panel-body">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <a data-toggle="collapse" data-parent="#loginAccordion" href="#collapseRegister">
+          Register
+        </a>
+      </div>
+      <div id="collapseRegister" class="panel-collapse collapse">
+        <div class="panel-body">
 
-        <% include 'users/_register' %>
+          <% include 'users/_register' %>
 
+        </div>
       </div>
     </div>
-  </div>
 
-</div>
+  </div>
 </div>

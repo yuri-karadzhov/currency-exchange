@@ -3,6 +3,10 @@ body {
   padding-bottom: 70px;
 }
 
+.data-cloak {
+  display: none;
+}
+
 .panel-dark {
   border-color: transparent;
 }

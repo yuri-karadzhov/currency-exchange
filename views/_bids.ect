@@ -1,0 +1,38 @@
+<div id="bidPanel" class="col-md-6">
+  <div class="panel panel-dark">
+
+    <div class="panel-heading">
+      Bids
+      <a id="placeBidLink" class="pull-right" href="#">
+        Place Bid
+      </a>
+    </div>
+
+    <div class="panel-body">
+
+      <div class="well" data-hide="{{bids.length}}">
+        No bids were placed yet.
+      </div>
+
+      <table class="table table-hover table-striped" data-show="{{bids.length}}">
+        <thead>
+          <th>Currency</th>
+          <th>Left</th>
+          <th>Total</th>
+          <th>Part</th>
+          <th>Time</th>
+        </thead>
+        <tbody>
+          <tr data-repeat="bid in bids" class="data-cloak">
+            <td>{{bid.currency}}</td>
+            <td>{{bid.left}}</td>
+            <td>{{bid.amount}}</td>
+            <td>{{bid.part}}</td>
+            <td>{{bid.time}}</td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+</div>

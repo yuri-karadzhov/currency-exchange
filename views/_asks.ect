@@ -1,0 +1,36 @@
+<div id="askPanel" class="col-md-6">
+  <div class="panel panel-dark">
+    <div class="panel-heading">
+      Asks
+      <a id="placeAskLink" class="pull-right" href="#">
+        Place Ask
+      </a>
+    </div>
+    <div class="panel-body">
+
+      <div class="well" data-hide="{{asks.length}}">
+        No asks were placed yet.
+      </div>
+
+      <table class="table table-hover table-striped" data-show="{{asks.length}}">
+        <thead>
+          <th>Currency</th>
+          <th>Left</th>
+          <th>Total</th>
+          <th>Part</th>
+          <th>Time</th>
+        </thead>
+        <tbody>
+          <tr data-repeat="ask in asks" class="data-cloak">
+            <td>{{ask.currency}}</td>
+            <td>{{ask.left}}</td>
+            <td>{{ask.amount}}</td>
+            <td>{{ask.part}}</td>
+            <td>{{ask.time}}</td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+</div>
