@@ -1,20 +1,24 @@
 $ ->
+  sockets = require './sockets'
+  
   bidsTemplate = soma.template.create $('#bidPanel').get(0)
   asksTemplate = soma.template.create $('#askPanel').get(0)
   rateTemplate = soma.template.create $('#placeRate').get(0)
 
-  bidsTemplate.scope.bids = []
+  bidsTemplate.scope.timeFormat = (time) -> time.format 'HH:mm'
+  bidsTemplate.scope.rates = []
   bidsTemplate.render()
 
-  asksTemplate.scope.asks = []
+  asksTemplate.scope.timeFormat = (time) -> time.format 'HH:mm'
+  asksTemplate.scope.rates = []
   asksTemplate.render()
 
-  $('#placeBidLink').click ->
+  $('#placeBidLink, #placeBidLinkFirst, #placeBidLinkMenu').click ->
     rateTemplate.scope.rate = 'Bid'
     rateTemplate.render()
     $('#placeRate').modal 'show'
 
-  $('#placeAskLink').click ->
+  $('#placeAskLink, #placeAskLinkFirst, #placeAskLinkMenu').click ->
     rateTemplate.scope.rate = 'Ask'
     rateTemplate.render()
     $('#placeRate').modal 'show'
@@ -24,18 +28,21 @@ $ ->
     left: $('#rateAmountInput').val()
     amount: $('#rateAmountInput').val()
     part: $('#ratePartInput').val()
-    time: $('#rateTimePickerInput').val()
+    time: $('#rateTimePicker').data('DateTimePicker').date()
+    comment: $('#commentArea').val()
 
   $('#placeRateButton').click ->
-    rate = rateTemplate.scope.rate
-    if rate is 'Bid'
-      bidsTemplate.scope.bids.push rateFormValues()
-      $('#placeRate').modal 'hide'
-      bidsTemplate.render()
-    else
-      asksTemplate.scope.asks.push rateFormValues()
-      $('#placeRate').modal 'hide'
-      asksTemplate.render()
+    isBid = rateTemplate.scope.rate is 'Bid'
+    template = if isBid then bidsTemplate else asksTemplate
+    rate = rateFormValues()
+    template.scope.rates.push rate
+    template.render()
+    channel = if isBid then 'bids' else 'asks'
+    sockets[channel].emit 'place', rate
+    console.log rate
+    $('#placeRate').modal 'hide'
+    $('#rateForm').trigger 'reset'
+    $('#rateTimePicker').data('DateTimePicker').date moment().add 4, 'hour'
 
   $('#rateTimePicker').datetimepicker
     format: 'HH:mm'

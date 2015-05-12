@@ -3,6 +3,14 @@ body {
   padding-bottom: 70px;
 }
 
+a:focus, a:active {
+  outline: 0;
+}
+
+.noresize {
+  resize: none;
+}
+
 .data-cloak {
   display: none;
 }

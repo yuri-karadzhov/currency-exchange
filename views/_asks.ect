@@ -8,11 +8,11 @@
     </div>
     <div class="panel-body">
 
-      <div class="well" data-hide="{{asks.length}}">
-        No asks were placed yet.
+      <div class="well" data-hide="{{rates.length}}">
+        No asks were placed yet. Be the first one who <a id="placeAskLinkFirst" href="#">place it</a>
       </div>
 
-      <table class="table table-hover table-striped" data-show="{{asks.length}}">
+      <table class="table table-hover table-striped data-cloak" data-show="{{rates.length}}">
         <thead>
           <th>Currency</th>
           <th>Left</th>
@@ -21,12 +21,12 @@
           <th>Time</th>
         </thead>
         <tbody>
-          <tr data-repeat="ask in asks" class="data-cloak">
+          <tr data-repeat="ask in rates">
             <td>{{ask.currency}}</td>
             <td>{{ask.left}}</td>
             <td>{{ask.amount}}</td>
             <td>{{ask.part}}</td>
-            <td>{{ask.time}}</td>
+            <td>{{timeFormat(ask.time)}}</td>
           </tr>
         </tbody>
       </table>

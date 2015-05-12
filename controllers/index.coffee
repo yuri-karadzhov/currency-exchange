@@ -120,8 +120,8 @@ exports.local = (passport) ->
     failureRedirect: '/login'
 
 exports.confirm = (req, res, next) ->
-  uid = req.user.id
-  return db.users.findById uid, (err, user) ->
+  userId = req.user.id
+  return db.users.findById userId, (err, user) ->
     #TODO use flash instead
     return res.send err.stack if err
     return res.send new Error 'User not found' unless user

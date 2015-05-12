@@ -32,6 +32,11 @@ class User
     @password = tools.hash password
     client.del "restores:#{hash}:uid"
     return client.hset "users:#{@id}", 'password', @password, cb
+  
+  placeBid: (bid, cb) ->
+    db.bids.create @id, bid, cb
+    
+  placeAsk: (bid, cb) ->
 
   getBids: (cb) ->
 
@@ -53,12 +58,12 @@ class User
     room
     password
   }, cb) ->
-    return client.incr 'users:next', (err, uid) ->
+    return client.incr 'users:next', (err, userId) ->
       return cb err, null if err
       hash = tools.hash email, Date.now()
       solePassword = tools.hash password
       userConfig =
-        id: uid + ''
+        id: userId + ''
         email: email
         firstname: firstname
         lastname: lastname
@@ -66,31 +71,31 @@ class User
         password: solePassword
         status: 'unconfirmed'
         hash: hash
-      client.set "hashes:#{hash}:uid", uid
-      client.set "emails:#{email}:uid", uid
-      client.hmset "users:#{uid}", userConfig
+      client.set "hashes:#{hash}:uid", userId
+      client.set "emails:#{email}:uid", userId
+      client.hmset "users:#{userId}", userConfig
       user = new User userConfig
       return cb null, user
 
   @findByEmail: (email, cb) ->
-    return client.get "emails:#{email}:uid", (err, uid) ->
-      return cb err, null if err or not uid
-      return db.users.findById uid, cb
+    return client.get "emails:#{email}:uid", (err, userId) ->
+      return cb err, null if err or not userId
+      return db.users.findById userId, cb
 
   @findByHash: (hash, cb) ->
-    return client.get "hashes:#{hash}:uid", (err, uid) ->
-      return cb err, null if err or not uid
-      return db.users.findById uid, cb
+    return client.get "hashes:#{hash}:uid", (err, userId) ->
+      return cb err, null if err or not userId
+      return db.users.findById userId, cb
 
-  @findById: (uid, cb) ->
-    return client.hgetall "users:#{uid}", (err, userConfig) ->
+  @findById: (userId, cb) ->
+    return client.hgetall "users:#{userId}", (err, userConfig) ->
       return cb err, null if err or not userConfig
       user = new User userConfig
       return cb null, user
 
   @findByRestore: (hash, cb) ->
-    return client.get "restores:#{hash}:uid", (err, uid) ->
+    return client.get "restores:#{hash}:uid", (err, userId) ->
       return cb err, null if err
-      return db.users.findById uid, cb
+      return db.users.findById userId, cb
 
 module.exports = User

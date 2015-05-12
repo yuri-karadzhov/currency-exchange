@@ -7,8 +7,6 @@ cfg = require '../config'
 RedisStore = connectRedis session
 
 exports.client = redis.createClient()
-exports.pub = redis.createClient()
-exports.sub = redis.createClient()
 
 exports.sessions = session
   store: new RedisStore
