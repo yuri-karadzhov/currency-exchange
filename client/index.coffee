@@ -37,9 +37,11 @@ $ ->
     rate = rateFormValues()
     template.scope.rates.push rate
     template.render()
+    socketRate = $.extend {}, rate, time: rate.time.format 'x'
     channel = if isBid then 'bids' else 'asks'
-    sockets[channel].emit 'place', rate
+    sockets[channel].emit 'place', socketRate
     console.log rate
+    console.log socketRate
     $('#placeRate').modal 'hide'
     $('#rateForm').trigger 'reset'
     $('#rateTimePicker').data('DateTimePicker').date moment().add 4, 'hour'

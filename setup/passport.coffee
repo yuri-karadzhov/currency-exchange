@@ -7,7 +7,8 @@ db = require '../db'
 passport.serializeUser (user, done) ->
   return done null, user
 
-passport.deserializeUser (user, done) ->
+passport.deserializeUser (userConfig, done) ->
+  user = new db.users userConfig if userConfig
   return done null, user
 
 passport.use new LocalStrategy

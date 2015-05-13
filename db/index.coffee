@@ -18,6 +18,7 @@ exports.sessions = session
   console.error err.stack
 
 exports.users = require './users'
+exports.bids = require './bids'
 
 ###
 users:<id>

@@ -12,6 +12,8 @@ exports.hash = (val, sole = cfg.SOLE) ->
   hash.update sole + val, 'ascii'
   return hash.digest 'hex'
 
+exports.print = -> console.log arguments...
+
 exports.expressToSocket = (middle) ->
   return (socket, next) ->
     return middle socket.request, socket.request.res, next

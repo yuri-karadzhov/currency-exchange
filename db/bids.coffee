@@ -33,10 +33,10 @@ class Bid
       bidConfig =
         id: bidId + ''
         uid: userId
-        currency: currenct
+        currency: currency
         amount: amount
         part: part
-        time: time.format 'x'
+        time: time
         comment: comment
         status: 'open'
       client.sadd "users:#{userId}:bids", bidId
