@@ -17,7 +17,7 @@ class User
   }) ->
 
   persist: (cb) ->
-    #TODO use async or generators + co, Q, bluebird or native promices and logger in this class
+    #TODO use generators + bluebird and logger in this class
     client.hdel "users:#{@id}", 'hash'
     client.del "hashes:#{@hash}:uid"
     return client.hset "users:#{@id}", 'status', 'registred', cb
