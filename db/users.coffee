@@ -1,3 +1,5 @@
+Promise = require 'bluebird'
+
 db = require './'
 tools = require '../tools'
 
@@ -16,37 +18,32 @@ class User
     @hash
   }) ->
 
-  persist: tools.wrap ->
-    console.log @id
+  persist: Promise.coroutine ->
     client.hdel "users:#{@id}", 'hash'
     client.del "hashes:#{@hash}:uid"
     return yield client.hset "users:#{@id}", 'status', 'registred'
 
-  forgotPassword: ->
-    #FIXME this is realy ugly
-    user = @
-    tools.wrap ->
-      console.log 'weeeeeeeeee', @email, user.email
-      hash = tools.hash @email, Date.now()
-      #TODO make hashes temporary and clean on expire
-      yield client.set "restores:#{hash}:uid", @id
-      return hash
+  forgotPassword: Promise.coroutine ->
+    hash = tools.hash @email, Date.now()
+    #TODO make hashes temporary and clean on expire
+    yield client.set "restores:#{hash}:uid", @id
+    return hash
 
-  restorePassword: ({hash, password}, cb) ->
+  restorePassword: Promise.coroutine ({hash, password}) ->
     @password = tools.hash password
     client.del "restores:#{hash}:uid"
-    return client.hset "users:#{@id}", 'password', @password, cb
-  
-  placeBid: (bid, cb) ->
-    db.bids.create @id, bid, cb
-    
-  placeAsk: (bid, cb) ->
+    return yield client.hset "users:#{@id}", 'password', @password
 
-  getBids: (cb) ->
-    client.smembers "users:#{@id}:bids", (err, bidIds) ->
-      console.log bidIds
+  placeBid: (bid) ->
+    db.bids.create @id, bid
 
-  getAsks: (cb) ->
+  placeAsk: (bid) ->
+
+  getBids: Promise.coroutine ->
+    bidIds = yield client.smembers "users:#{@id}:bids"
+    console.log bidIds
+
+  getAsks: ->
 
   isRegistred: ->
     return @status is 'registred'
@@ -57,7 +54,7 @@ class User
   hasPassword: (password) ->
     return @password is tools.hash password
 
-  @create: tools.wrap ({
+  @create: Promise.coroutine ({
     email
     firstname
     lastname
@@ -81,24 +78,24 @@ class User
     client.hmset "users:#{userId}", userConfig
     return new User userConfig
 
-  @findByEmail: tools.wrap (email) ->
+  @findByEmail: Promise.coroutine (email) ->
     userId = yield client.get "emails:#{email}:uid"
     return null unless userId
     return db.users.findById userId
 
-  @findByHash: tools.wrap (hash) ->
+  @findByHash: Promise.coroutine (hash) ->
     userId = yield client.get "hashes:#{hash}:uid"
     return null unless userId
     return db.users.findById userId
 
-  @findById: tools.wrap (userId) ->
+  @findById: Promise.coroutine (userId) ->
     userConfig = yield client.hgetall "users:#{userId}"
     user = new User userConfig
     return user
 
-  @findByRestore: (hash, cb) ->
-    return client.get "restores:#{hash}:uid", (err, userId) ->
-      return cb err, null if err
-      return db.users.findById userId, cb
+  @findByRestore: Promise.coroutine (hash) ->
+    userId = yield client.get "restores:#{hash}:uid"
+    return null unless userId
+    return db.users.findById userId
 
 module.exports = User

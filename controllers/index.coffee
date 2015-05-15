@@ -1,6 +1,6 @@
 domain = require 'domain'
+Promise = require 'bluebird'
 
-tools = require '../tools'
 db = require '../db'
 
 exports.domains = (req, res, next) ->
@@ -8,7 +8,7 @@ exports.domains = (req, res, next) ->
   requestDomain.add req
   requestDomain.add res
   requestDomain.on 'error', (err) ->
-    #FIXME do not handle tools.wrap exceptions
+    #FIXME do not handle Promise.coroutine exceptions
     console.log 'domain error:', err
     next err
   requestDomain.run next
@@ -35,7 +35,7 @@ exports.isAuth = (req, res, next) ->
     success: no
     message: 'Not authenticated'
 
-exports.forgotPassword = tools.wrap (req, res, next) ->
+exports.forgotPassword = Promise.coroutine (req, res, next) ->
   email = req.body.email
   #TODO write flash message
   #TODO check email pattern
@@ -49,15 +49,14 @@ exports.forgotPassword = tools.wrap (req, res, next) ->
   return res.send "Restore password:
       <a href='http://localhost:9000/restore/#{hash}'>restore</a>"
 
-exports.restorePage = (req, res, next) ->
+exports.restorePage = Promise.coroutine (req, res, next) ->
   hash = req.params.hash
-  return db.users.findByRestore hash, (err, user) ->
-    return next err if err
-    #TODO use flash instead
-    return res.send 'Invalid restore link' unless user
-    return res.render 'restore', user: user, hash: hash
+  user = yield db.users.findByRestore hash
+  #TODO use flash instead
+  return res.send 'Invalid restore link' unless user
+  return res.render 'restore', user: user, hash: hash
 
-exports.restorePassword = (req, res, next) ->
+exports.restorePassword = Promise.coroutine (req, res, next) ->
   data = req.body
   hash = data.hash
   password = data.password
@@ -70,16 +69,14 @@ exports.restorePassword = (req, res, next) ->
   unless password is confirmpassword
     return res.send 'Password did not match confirmation'
 
-  return db.users.findByRestore hash, (err, user) ->
-    return next err if err
-    #TODO use flash
-    return res.send 'Invalid restore link' unless user
-    return user.restorePassword {hash, password}, (err) ->
-      #TODO use flash
-      return next err if err
-      return res.redirect '/login'
+  user = yield db.users.findByRestore hash
+  #TODO use flash
+  return res.send 'Invalid restore link' unless user
+  yield user.restorePassword {hash, password}
+  #TODO use flash
+  return res.redirect '/login'
 
-exports.register = tools.wrap (req, res, next) ->
+exports.register = Promise.coroutine (req, res, next) ->
   data = req.body
   email = data.email
   firstname = data.firstname
@@ -128,7 +125,7 @@ exports.local = (passport) ->
     successRedirect: '/',
     failureRedirect: '/login'
 
-exports.confirm = tools.wrap (req, res, next) ->
+exports.confirm = Promise.coroutine (req, res, next) ->
   userId = req.user.id
   user = yield db.users.findById userId
   #TODO use flash instead
@@ -137,7 +134,6 @@ exports.confirm = tools.wrap (req, res, next) ->
   return next()
 
 exports.enter = (req, res) ->
-  console.log 'hey'
   return res.redirect '/'
 
 exports.notFound = (req, res) ->

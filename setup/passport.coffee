@@ -1,8 +1,8 @@
 passport = require 'passport'
 LocalStrategy = require('passport-local').Strategy
 HashStrategy = require('passport-hash').Strategy
+Promise = require 'bluebird'
 
-tools = require '../tools'
 db = require '../db'
 
 passport.serializeUser (user, done) ->
@@ -15,10 +15,8 @@ passport.deserializeUser (userConfig, done) ->
 passport.use new LocalStrategy
   usernameField: 'email'
   passwordField: 'password'
-, tools.wrap (email, password, done) ->
-  console.log 'passport', email
+, Promise.coroutine (email, password, done) ->
   user = yield db.users.findByEmail email
-  console.log 'passport', user
   unless user
     return done null, no, message: "Unknown user #{email}"
   unless user.isRegistred()
@@ -27,10 +25,8 @@ passport.use new LocalStrategy
     return done null, no, message: 'Invalid password'
   return done null, user
 
-passport.use new HashStrategy tools.wrap (hash, done) ->
-  console.log hash
+passport.use new HashStrategy Promise.coroutine (hash, done) ->
   user = yield db.users.findByHash hash
-  console.log user
   unless user
     return done null, no, message: "Can not get user by hash #{hash}"
   unless user.isUnconfirmed()
