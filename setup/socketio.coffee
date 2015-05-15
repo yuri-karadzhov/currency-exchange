@@ -21,7 +21,7 @@ exports.create = (server) ->
   bids.on 'connection', (socket) ->
     
     user = socket.request.user
-    console.log user?.getBids()
+#    console.log user?.getBids()
   
     socket.on 'place', (bid) ->
       console.log 'place', bid

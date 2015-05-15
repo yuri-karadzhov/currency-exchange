@@ -16,17 +16,21 @@ class User
     @hash
   }) ->
 
-  persist: (cb) ->
-    #TODO use generators + bluebird and logger in this class
+  persist: tools.wrap ->
+    console.log @id
     client.hdel "users:#{@id}", 'hash'
     client.del "hashes:#{@hash}:uid"
-    return client.hset "users:#{@id}", 'status', 'registred', cb
+    return yield client.hset "users:#{@id}", 'status', 'registred'
 
-  forgotPassword: (cb) ->
-    hash = tools.hash @email, Date.now()
-    #TODO make hashes temporary and clean on expire
-    client.set "restores:#{hash}:uid", @id, (err) ->
-      return cb err, hash
+  forgotPassword: ->
+    #FIXME this is realy ugly
+    user = @
+    tools.wrap ->
+      console.log 'weeeeeeeeee', @email, user.email
+      hash = tools.hash @email, Date.now()
+      #TODO make hashes temporary and clean on expire
+      yield client.set "restores:#{hash}:uid", @id
+      return hash
 
   restorePassword: ({hash, password}, cb) ->
     @password = tools.hash password
@@ -53,47 +57,44 @@ class User
   hasPassword: (password) ->
     return @password is tools.hash password
 
-  @create: ({
+  @create: tools.wrap ({
     email
     firstname
     lastname
     room
     password
-  }, cb) ->
-    return client.incr 'users:next', (err, userId) ->
-      return cb err, null if err
-      hash = tools.hash email, Date.now()
-      solePassword = tools.hash password
-      userConfig =
-        id: userId + ''
-        email: email
-        firstname: firstname
-        lastname: lastname
-        room: room
-        password: solePassword
-        status: 'unconfirmed'
-        hash: hash
-      client.set "hashes:#{hash}:uid", userId
-      client.set "emails:#{email}:uid", userId
-      client.hmset "users:#{userId}", userConfig
-      user = new User userConfig
-      return cb null, user
+  }) ->
+    userId = yield client.incr 'users:next'
+    hash = tools.hash email, Date.now()
+    solePassword = tools.hash password
+    userConfig =
+      id: userId + ''
+      email: email
+      firstname: firstname
+      lastname: lastname
+      room: room
+      password: solePassword
+      status: 'unconfirmed'
+      hash: hash
+    client.set "hashes:#{hash}:uid", userId
+    client.set "emails:#{email}:uid", userId
+    client.hmset "users:#{userId}", userConfig
+    return new User userConfig
 
-  @findByEmail: (email, cb) ->
-    return client.get "emails:#{email}:uid", (err, userId) ->
-      return cb err, null if err or not userId
-      return db.users.findById userId, cb
+  @findByEmail: tools.wrap (email) ->
+    userId = yield client.get "emails:#{email}:uid"
+    return null unless userId
+    return db.users.findById userId
 
-  @findByHash: (hash, cb) ->
-    return client.get "hashes:#{hash}:uid", (err, userId) ->
-      return cb err, null if err or not userId
-      return db.users.findById userId, cb
+  @findByHash: tools.wrap (hash) ->
+    userId = yield client.get "hashes:#{hash}:uid"
+    return null unless userId
+    return db.users.findById userId
 
-  @findById: (userId, cb) ->
-    return client.hgetall "users:#{userId}", (err, userConfig) ->
-      return cb err, null if err or not userConfig
-      user = new User userConfig
-      return cb null, user
+  @findById: tools.wrap (userId) ->
+    userConfig = yield client.hgetall "users:#{userId}"
+    user = new User userConfig
+    return user
 
   @findByRestore: (hash, cb) ->
     return client.get "restores:#{hash}:uid", (err, userId) ->

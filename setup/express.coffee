@@ -21,6 +21,7 @@ app.engine 'ect', ectEngine.render
 
 app.use livereload()
 
+app.use cts.domains
 app.use bodyParser.json()
 app.use bodyParser.urlencoded()
 app.use db.sessions

@@ -1,4 +1,17 @@
+domain = require 'domain'
+
+tools = require '../tools'
 db = require '../db'
+
+exports.domains = (req, res, next) ->
+  requestDomain = domain.create()
+  requestDomain.add req
+  requestDomain.add res
+  requestDomain.on 'error', (err) ->
+    #FIXME do not handle tools.wrap exceptions
+    console.log 'domain error:', err
+    next err
+  requestDomain.run next
 
 exports.helpers = (req, res, next) ->
   res.locals.helpers = user: req.user
@@ -22,21 +35,19 @@ exports.isAuth = (req, res, next) ->
     success: no
     message: 'Not authenticated'
 
-exports.forgotPassword = (req, res, next) ->
+exports.forgotPassword = tools.wrap (req, res, next) ->
   email = req.body.email
   #TODO write flash message
   #TODO check email pattern
   unless email.length
     return res.send 'Enter email'
-  return db.users.findByEmail email, (err, user) ->
-    return next err if err
-    #TODO use flash instead
-    return res.send 'User is not registered' unless user
-    return user.forgotPassword (err, hash) ->
-      return next err if err
-      #TODO send email with the link
-      return res.send "Restore password:
-        <a href='http://localhost:9000/restore/#{hash}'>restore</a>"
+  user = yield db.users.findByEmail email
+  #TODO use flash instead
+  return res.send 'User is not registered' unless user
+  hash = yield user.forgotPassword()
+  #TODO send email with the link
+  return res.send "Restore password:
+      <a href='http://localhost:9000/restore/#{hash}'>restore</a>"
 
 exports.restorePage = (req, res, next) ->
   hash = req.params.hash
@@ -68,7 +79,7 @@ exports.restorePassword = (req, res, next) ->
       return next err if err
       return res.redirect '/login'
 
-exports.register = (req, res, next) ->
+exports.register = tools.wrap (req, res, next) ->
   data = req.body
   email = data.email
   firstname = data.firstname
@@ -92,21 +103,19 @@ exports.register = (req, res, next) ->
   unless password is confirmpassword
     return res.send 'Password did not match confirmation'
 
-  return db.users.findByEmail email, (err, user) ->
-    return next err if err
-    #TODO use flash instead
-    return res.send 'User already registered' if user
-    return db.users.create {
-      email
-      firstname
-      lastname
-      room
-      password
-    }, (err, user) ->
-      return next err if err
-      #TODO use email confirmation
-      return res.send "Confirm registration
-        <a href='http://localhost:9000/confirm/#{user.hash}'>confirm</a>"
+  user = yield db.users.findByEmail email
+  #TODO use flash instead
+  return res.send 'User already registered' if user
+  user = yield db.users.create {
+    email
+    firstname
+    lastname
+    room
+    password
+  }
+  #TODO use email confirmation
+  return res.send "Confirm registration
+    <a href='http://localhost:9000/confirm/#{user.hash}'>confirm</a>"
 
 exports.hash = (passport) ->
   #TODO add flash message
@@ -119,15 +128,16 @@ exports.local = (passport) ->
     successRedirect: '/',
     failureRedirect: '/login'
 
-exports.confirm = (req, res, next) ->
+exports.confirm = tools.wrap (req, res, next) ->
   userId = req.user.id
-  return db.users.findById userId, (err, user) ->
-    #TODO use flash instead
-    return res.send err.stack if err
-    return res.send new Error 'User not found' unless user
-    return user.persist next
+  user = yield db.users.findById userId
+  #TODO use flash instead
+  return res.send new Error 'User not found' unless user
+  yield user.persist()
+  return next()
 
 exports.enter = (req, res) ->
+  console.log 'hey'
   return res.redirect '/'
 
 exports.notFound = (req, res) ->

@@ -20,6 +20,7 @@ gulp.task 'nodemon', ->
     tasks: ['lint']
     ext: 'coffee'
     ignore: ['client', 'views']
+    execMap: 'coffee': 'coffee --nodejs --harmony'
   .on 'restart', ->
     livereload.reload()
 

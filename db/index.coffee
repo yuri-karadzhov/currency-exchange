@@ -1,4 +1,4 @@
-redis = require 'redis'
+redis = require 'then-redis'
 connectRedis = require 'connect-redis'
 session = require 'express-session'
 
@@ -10,7 +10,7 @@ exports.client = redis.createClient()
 
 exports.sessions = session
   store: new RedisStore
-    client: @client
+    client: @client._redisClient
   secret: cfg.SECRET
 
 

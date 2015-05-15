@@ -7,7 +7,9 @@ cfg = require '../config'
 
 exports.wrap = (generator) ->
   coroutine = Promise.coroutine generator
-  return (req, res, next) -> coroutine(req, res, next).catch next
+  return -> coroutine(arguments...).catch (err) ->
+    console.log 'catch you!', err
+    throw err
 
 exports.isDevelopment = ->
   return cfg.ENVIRONMENT is 'development'
