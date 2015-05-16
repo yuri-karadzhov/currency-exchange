@@ -1,0 +1,10 @@
+<div id="flashMessages" class="col-md-6 col-md-offset-3" role="alert">
+  <ul class="list-group">
+    <% for error in @errors : %>
+      <li class="list-group-item list-group-item-danger"><%= error %></li>
+    <% end %>
+    <% for info in @infos : %>
+      <li class="list-group-item list-group-item-info"><%= info %></li>
+    <% end %>
+  </ul>
+</div>

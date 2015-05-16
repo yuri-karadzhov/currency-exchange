@@ -21,7 +21,9 @@ exports.main = (req, res, next) ->
   return res.render 'index'
 
 exports.login = (req, res, next) ->
-  return res.render 'login'
+  return res.render 'login',
+    errors: req.flash 'error'
+    infos: req.flash 'info'
 
 exports.logout = (req, res, next) ->
   req.logOut()
@@ -37,13 +39,14 @@ exports.isAuth = (req, res, next) ->
 
 exports.forgotPassword = Promise.coroutine (req, res, next) ->
   email = req.body.email
-  #TODO write flash message
   #TODO check email pattern
   unless email.length
-    return res.send 'Enter email'
+    req.flash 'error', 'Email not specified'
+    return res.redirect '/login'
   user = yield db.users.findByEmail email
-  #TODO use flash instead
-  return res.send 'User is not registered' unless user
+  unless user
+    req.flash 'error', 'User is not registered'
+    return res.redirect '/login'
   hash = yield user.forgotPassword()
   #TODO send email with the link
   return res.send "Restore password:
@@ -52,8 +55,9 @@ exports.forgotPassword = Promise.coroutine (req, res, next) ->
 exports.restorePage = Promise.coroutine (req, res, next) ->
   hash = req.params.hash
   user = yield db.users.findByRestore hash
-  #TODO use flash instead
-  return res.send 'Invalid restore link' unless user
+  unless user
+    req.flash 'error', 'Invalid restore link'
+    return res.redirect '/login'
   return res.render 'restore', user: user, hash: hash
 
 exports.restorePassword = Promise.coroutine (req, res, next) ->
@@ -62,18 +66,20 @@ exports.restorePassword = Promise.coroutine (req, res, next) ->
   password = data.password
   confirmpassword = data.confirmpassword
 
-  #TODO use flash
   #TODO check password strenth
   unless password.length
-    return res.send 'Enter password'
+    req.flash 'error', 'Enter password'
+    return res.redirect '/login'
   unless password is confirmpassword
-    return res.send 'Password did not match confirmation'
+    req.flash 'error', 'Password did not match confirmation'
+    return res.redirect '/login'
 
   user = yield db.users.findByRestore hash
-  #TODO use flash
-  return res.send 'Invalid restore link' unless user
+  unless user
+    req.flash 'error', 'Invalid restore link'
+    return res.redirect '/login'
   yield user.restorePassword {hash, password}
-  #TODO use flash
+  req.flash 'info', 'Your password is reset, please log in'
   return res.redirect '/login'
 
 exports.register = Promise.coroutine (req, res, next) ->
@@ -85,24 +91,32 @@ exports.register = Promise.coroutine (req, res, next) ->
   password = data.password
   confirmpassword = data.confirmpassword
 
-  #TODO write flash messages instead
   #TODO check email pattern and password strength
+  errors = no
   unless email.length
-    return res.send 'Enter email'
+    errors = yes
+    req.flash 'error', 'Enter email'
   unless firstname.length
-    return res.send 'Enter first name'
+    errors = yes
+    req.flash 'error', 'Enter first name'
   unless lastname.length
-    return res.send 'Enter last name'
+    errors = yes
+    req.flash 'error', 'Enter last name'
   unless room.length
-    return res.send 'Enter room number'
+    errors = yes
+    req.flash 'error', 'Enter room number'
   unless password.length
-    return res.send 'Enter password'
+    errors = yes
+    req.flash 'error', 'Enter password'
   unless password is confirmpassword
-    return res.send 'Password did not match confirmation'
+    errors = yes
+    req.flash 'error', 'Password did not match confirmation'
+  return res.redirect '/login' if errors
 
   user = yield db.users.findByEmail email
-  #TODO use flash instead
-  return res.send 'User already registered' if user
+  if user
+    req.flash 'User already registered'
+    return res.redirect '/login'
   user = yield db.users.create {
     email
     firstname
@@ -115,21 +129,22 @@ exports.register = Promise.coroutine (req, res, next) ->
     <a href='http://localhost:9000/confirm/#{user.hash}'>confirm</a>"
 
 exports.hash = (passport) ->
-  #TODO add flash message
   return passport.authenticate 'hash',
     failureRedirect: '/login'
+    failureFlash: yes
 
 exports.local = (passport) ->
-  #TODO add flash message
   return passport.authenticate 'local',
-    successRedirect: '/',
+    successRedirect: '/'
     failureRedirect: '/login'
+    failureFlash: yes
 
 exports.confirm = Promise.coroutine (req, res, next) ->
   userId = req.user.id
   user = yield db.users.findById userId
-  #TODO use flash instead
-  return res.send new Error 'User not found' unless user
+  unless user
+    req.flash 'error', 'User not found'
+    return res.reirect '/login'
   yield user.persist()
   return next()
 

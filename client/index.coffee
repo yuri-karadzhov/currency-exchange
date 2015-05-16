@@ -1,6 +1,8 @@
 $ ->
   sockets = require './sockets'
-  
+
+  $('#flashMessages').click -> $(@).slideUp()
+
   bidsTemplate = soma.template.create $('#bidPanel').get(0)
   asksTemplate = soma.template.create $('#askPanel').get(0)
   rateTemplate = soma.template.create $('#placeRate').get(0)

@@ -1,5 +1,6 @@
 express = require 'express'
 bodyParser = require 'body-parser'
+flash = require 'connect-flash'
 ect = require 'ect'
 livereload = require 'connect-livereload'
 
@@ -28,6 +29,7 @@ app.use db.sessions
 app.use passport.initialize()
 #TODO add logger
 app.use passport.session()
+app.use flash()
 app.get '/confirm/:hash', cts.hash(passport), cts.confirm, cts.enter
 app.post '/login', cts.local(passport)
 app.use cts.helpers
