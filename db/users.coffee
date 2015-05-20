@@ -41,7 +41,7 @@ class User
 
   getBids: Promise.coroutine ->
     bidIds = yield client.smembers "users:#{@id}:bids"
-    console.log bidIds
+    return yield Promise.all bidIds.map db.bids.findById
 
   getAsks: ->
 

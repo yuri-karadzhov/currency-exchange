@@ -48,6 +48,7 @@ exports.forgotPassword = Promise.coroutine (req, res, next) ->
     req.flash 'error', 'User is not registered'
     return res.redirect '/login'
   hash = yield user.forgotPassword()
+  yield user.persist()
   #TODO send email with the link
   return res.send "Restore password:
       <a href='http://localhost:9000/restore/#{hash}'>restore</a>"

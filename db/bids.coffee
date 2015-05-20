@@ -44,7 +44,7 @@ class Bid
     client.hmset "bids:#{bidId}", bidConfig
     return new Bid bidConfig
 
-  @findById: (bidId) ->
+  @findById: Promise.coroutine (bidId) ->
     bidConfig = yield client.hgetall "bids:#{bidId}"
     return new Bid bidConfig
 
