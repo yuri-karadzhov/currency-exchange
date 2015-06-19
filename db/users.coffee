@@ -36,14 +36,19 @@ class User
 
   placeBid: (bid) ->
     db.bids.create @id, bid
+    #TODO check for open bids
 
-  placeAsk: (bid) ->
+  placeAsk: (ask) ->
+    db.asks.create @id, ask
+    #TODO check for open asks
 
   getBids: Promise.coroutine ->
     bidIds = yield client.smembers "users:#{@id}:bids"
     return yield Promise.all bidIds.map db.bids.findById
 
-  getAsks: ->
+  getAsks: Promise.coroutine ->
+    askIds = yield client.smembers "users:#{@id}:asks"
+    return yield Promise.all askIds.map db.asks.findById
 
   isRegistred: ->
     return @status is 'registred'

@@ -1,0 +1,80 @@
+<div id="takeRate" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Take {{rate}}</h4>
+            </div>
+            <div class="modal-body">
+
+                <form id="rateForm" class="form-horizontal">
+
+                    <div class="form-group">
+                        <label for="rateCurrencySelector" class="col-sm-2 control-label">
+                            Currency
+                        </label>
+                        <div class="col-sm-10">
+                            <select id="rateCurrencySelector" class="form-control" name="currency">
+                                <option>&#x24; USD</option>
+                                <option>&#x20ac; EUR</option>
+                                <option>&#x20bd; RUR</option>
+                                <option>&#xa3; GBP</option>
+                                <option>&#x20a3; CHF</option>
+                                <option>&#x20b3; AUD</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rateAmountInput" class="col-sm-2 control-label">
+                            Amount
+                        </label>
+                        <div class="col-sm-10">
+                            <input type="number" min=0 step=100 class="form-control" id="rateAmountInput" placeholder="Enter amount" name="amount" value=100>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ratePartInput" class="col-sm-2 control-label">
+                            Part size
+                        </label>
+                        <div class="col-sm-10">
+                            <input type="number" min=0 step=50 class="form-control" id="ratePartInput" placeholder="Enter part size" name="part" value=100>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rateTimePicker" class="col-sm-2 control-label">
+                            End time
+                        </label>
+                        <div class="col-sm-10">
+                            <div class="input-group date date-dark" id="rateTimePicker">
+                                <input type='text' class="form-control" id="rateTimePickerInput">
+                <span class="input-group-addon">
+                  <span class="glyphicon glyphicon-time"></span>
+                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="commentArea" class="col-sm-2 control-label">
+                            Comment
+                        </label>
+                        <div class="col-sm-10">
+                            <textarea rows=3 class="form-control noresize" id="commentArea" placeholder="Enter optional comment" name="comment"></textarea>
+                        </div>
+                    </div>
+
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button id="placeRateButton" type="button" class="btn btn-primary">Take {{rate}}</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -12,6 +12,7 @@ class Bid
     @uid
     @currency
     @amount
+    @left
     @part
     @time
     @comment
@@ -25,6 +26,7 @@ class Bid
   @create: Promise.coroutine (userId, {
     currency
     amount
+    left
     part
     time
     comment
@@ -36,6 +38,7 @@ class Bid
       uid: userId
       currency: currency
       amount: amount
+      left: left
       part: part
       time: time
       comment: comment

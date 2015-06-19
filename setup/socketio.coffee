@@ -22,13 +22,27 @@ exports.create = (server) ->
   bids.on 'connection', (socket) ->
 
     user = socket.request.user
+    return unless user
     
     socket.on 'list', Promise.coroutine ->
-      console.log 'list'
       socket.emit 'list', yield user.getBids()
 
     socket.on 'place', (bid) ->
       console.log 'place', bid
       user.placeBid bid
+
+  asks = io.of '/asks'
+  asks.on 'connection', (socket) ->
+
+    user = socket.request.user
+    return unless user
+
+    socket.on 'list', Promise.coroutine ->
+      console.log yield user.getAsks()
+      socket.emit 'list', yield user.getAsks()
+
+    socket.on 'place', (ask) ->
+      console.log 'place ask', ask
+      user.placeAsk ask
 
   return io

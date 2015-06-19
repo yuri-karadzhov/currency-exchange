@@ -1,4 +1,5 @@
 Channel = require './channel'
+templates = require '../templates'
 
 class Bids extends Channel
   
@@ -8,7 +9,8 @@ class Bids extends Channel
     @channel.emit 'list'
       
     @channel.on 'list', (bids) ->
-      console.log bids
+      templates.bids.scope.rates = bids
+      templates.bids.render()
   
     @channel.on 'place', (bid) ->
       console.log 'place', bid

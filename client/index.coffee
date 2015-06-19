@@ -1,49 +1,38 @@
 $ ->
   sockets = require './sockets'
+  templates = require './templates'
 
   $('#flashMessages').click -> $(@).slideUp()
 
-  bidsTemplate = soma.template.create $('#bidPanel').get(0)
-  asksTemplate = soma.template.create $('#askPanel').get(0)
-  rateTemplate = soma.template.create $('#placeRate').get(0)
-
-  bidsTemplate.scope.timeFormat = (time) -> time.format 'HH:mm'
-  bidsTemplate.scope.rates = []
-  bidsTemplate.render()
-
-  asksTemplate.scope.timeFormat = (time) -> time.format 'HH:mm'
-  asksTemplate.scope.rates = []
-  asksTemplate.render()
-
   $('#placeBidLink, #placeBidLinkFirst, #placeBidLinkMenu').click ->
-    rateTemplate.scope.rate = 'Bid'
-    rateTemplate.render()
+    templates.rate.scope.rate = 'Bid'
+    templates.rate.render()
     $('#placeRate').modal 'show'
 
   $('#placeAskLink, #placeAskLinkFirst, #placeAskLinkMenu').click ->
-    rateTemplate.scope.rate = 'Ask'
-    rateTemplate.render()
+    templates.rate.scope.rate = 'Ask'
+    templates.rate.render()
     $('#placeRate').modal 'show'
+
+  $('#bidsTable, #asksTable').click 'tr', ->
+    $('#takeRate').modal 'show'
 
   rateFormValues = ->
     currency: $('#rateCurrencySelector').val()
     left: $('#rateAmountInput').val()
     amount: $('#rateAmountInput').val()
     part: $('#ratePartInput').val()
-    time: $('#rateTimePicker').data('DateTimePicker').date()
+    time: $('#rateTimePicker').data('DateTimePicker').date().format 'x'
     comment: $('#commentArea').val()
 
   $('#placeRateButton').click ->
-    isBid = rateTemplate.scope.rate is 'Bid'
-    template = if isBid then bidsTemplate else asksTemplate
+    isBid = templates.rate.scope.rate is 'Bid'
+    channel = if isBid then 'bids' else 'asks'
+    template = templates[channel]
     rate = rateFormValues()
     template.scope.rates.push rate
     template.render()
-    socketRate = $.extend {}, rate, time: rate.time.format 'x'
-    channel = if isBid then 'bids' else 'asks'
-    sockets[channel].emit 'place', socketRate
-    console.log rate
-    console.log socketRate
+    sockets[channel].emit 'place', rate
     $('#placeRate').modal 'hide'
     $('#rateForm').trigger 'reset'
     $('#rateTimePicker').data('DateTimePicker').date moment().add 4, 'hour'

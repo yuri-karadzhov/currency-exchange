@@ -19,6 +19,7 @@ exports.sessions = session
 
 exports.users = require './users'
 exports.bids = require './bids'
+exports.asks = require './asks'
 
 ###
 users:<id>
